@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source
+      - name: Download project
         uses: actions/checkout@v4
 
       - name: Set up Java
@@ -27,19 +27,33 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v4
 
-      - name: Install Android platform
+      - name: Install Android SDK
         run: |
-          sdkmanager "platforms;android-35" "build-tools;35.0.0"
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Find Gradle wrapper
+        run: |
+          WRAPPER=$(find . -type f -name gradlew \
+            -not -path './.git/*' -print -quit)
+
+          if [ -z "$WRAPPER" ]; then
+            echo "ERROR: No se encontro gradlew en el proyecto"
+            exit 1
+          fi
+
+          PROJECT_DIR=$(dirname "$WRAPPER")
+          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
 
       - name: Build APK
         run: |
-          chmod +x ./gradlew
+          cd "$PROJECT_DIR"
+          chmod +x gradlew
           ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Dream-D-APK
-          path: app/build/outputs/apk/debug/*.apk
+          path: '**/build/outputs/apk/debug/*.apk'
           if-no-files-found: error
           
