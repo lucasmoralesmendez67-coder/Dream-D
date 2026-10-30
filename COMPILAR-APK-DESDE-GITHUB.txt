@@ -1,0 +1,20 @@
+COMPILAR DREAM-D COMO APK DESDE EL TELEFONO (SIN PC)
+
+Este paquete incluye un flujo de compilacion en GitHub Actions.
+GitHub compilara el APK en sus servidores; no se compila dentro del telefono.
+
+1. Inicia sesion o crea una cuenta en https://github.com
+2. Crea un repositorio nuevo. Puedes llamarlo Dream-D y dejarlo privado.
+3. Descomprime este ZIP. Sube TODO el contenido de la carpeta Dream-D al repositorio, conservando las carpetas android-native y .github.
+4. En el repositorio, abre la pestaña Actions.
+5. Selecciona "Build Dream-D APK" y pulsa "Run workflow". Si no aparece, abre el archivo .github/workflows/build-apk.yml y confirma que se subio en esa ruta.
+6. Espera a que el proceso termine con una marca verde.
+7. Abre la ejecucion completada, baja hasta Artifacts y descarga "Dream-D-debug-apk".
+8. Descomprime ese archivo descargado. Dentro estara app-debug.apk.
+9. Toca el APK para instalarlo. Android puede pedir permiso para instalar desde el navegador o gestor de archivos que usaste.
+
+IMPORTANTE:
+- No subas claves API ni contrasenas al repositorio.
+- El APK debug es para pruebas, no una version publicada en Play Store.
+- Esta compilacion puede revelar errores del codigo que habra que corregir antes de instalar.
+- La app es un prototipo; la interfaz Android nativa no esta integrada todavia con el backend inteligente web.

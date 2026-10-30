@@ -1,0 +1,10 @@
+DREAM-D — PAQUETE DE DESARROLLO
+
+Contenido:
+- index.html y archivos PWA: prototipo web de chat/memoria y búsqueda web.
+- server.js/package.json: backend de ejemplo para conexión con OpenAI Responses API.
+- android-native/: proyecto fuente Android Studio con burbuja flotante y controles manuales básicos (Atrás, Inicio, desplazamiento).
+
+No se entrega un APK compilado. Para instalar como app nativa hay que abrir android-native en Android Studio y compilar. La app web puede alojarse en HTTPS e instalarse desde Chrome como PWA.
+
+La conexión GPT requiere desplegar el backend y configurar una clave API como secreto en el servidor. Nunca incrustes la clave en la app.

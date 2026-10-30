@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090d1c">
+<link rel="manifest" href="./manifest.webmanifest">
+<title>Dream-D</title>
+<style>
+:root{color-scheme:dark;--bg:#080c19;--panel:#111a30;--line:#263453;--cyan:#5de6f5;--purple:#a78bfa;--muted:#9aabc8}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -15%,#24356a 0,#10172d 35%,var(--bg) 75%);font:15px system-ui,-apple-system,Segoe UI,sans-serif;color:#f3f6ff;min-height:100vh}
+.app{max-width:760px;margin:auto;min-height:100vh;display:flex;flex-direction:column;padding:env(safe-area-inset-top) 14px env(safe-area-inset-bottom)}
+header{display:flex;align-items:center;gap:12px;padding:18px 4px 14px;border-bottom:1px solid #ffffff18}
+.logo{width:46px;height:46px;border-radius:15px;background:linear-gradient(135deg,#5de6f5,#8065ef);display:grid;place-items:center;color:#081225;font-weight:900;font-size:24px;box-shadow:0 0 28px #5de6f544}
+h1{font-size:21px;margin:0;letter-spacing:.4px} .sub{font-size:12px;color:var(--muted)} .status{margin-left:auto;font-size:11px;color:#8ff0c5;background:#12382e;padding:6px 9px;border-radius:20px}
+.tabs{display:flex;gap:8px;padding:13px 0}.tab{flex:1;border:1px solid var(--line);background:#10182b;color:#b9c7e2;border-radius:12px;padding:10px 6px;font-weight:650}.tab.active{background:linear-gradient(110deg,#173d55,#34275d);border-color:#5d9cae;color:white}
+main{flex:1;display:flex;flex-direction:column;min-height:420px}.panel{display:none;flex:1}.panel.active{display:flex;flex-direction:column}
+.notice{font-size:12px;color:#c1cde3;background:#131e35;border:1px solid #2b3d60;padding:11px 12px;border-radius:12px;margin:2px 0 12px;line-height:1.45}
+.messages{flex:1;overflow:auto;display:flex;flex-direction:column;gap:10px;padding:4px 1px 14px;min-height:260px}
+.msg{max-width:88%;padding:11px 13px;border-radius:15px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
+.bot{align-self:flex-start;background:#17233c;border:1px solid #2b3e61;border-bottom-left-radius:5px}.user{align-self:flex-end;background:linear-gradient(135deg,#285a77,#4b3b81);border-bottom-right-radius:5px}
+.composer{display:flex;gap:8px;padding:10px 0 15px}.composer input,.field,textarea{width:100%;background:#0d1528;color:white;border:1px solid #30415f;border-radius:12px;padding:13px;font:inherit;outline:none}.composer input:focus,.field:focus,textarea:focus{border-color:var(--cyan)}button{cursor:pointer}.send{border:0;border-radius:12px;padding:0 17px;background:linear-gradient(135deg,#5de6f5,#9a7af7);color:#071224;font-weight:800}
+.section-title{font-size:16px;font-weight:750;margin:6px 0 8px}.muted{color:var(--muted);font-size:12px;line-height:1.5}.form{display:flex;flex-direction:column;gap:10px}.primary{border:0;border-radius:12px;padding:12px 14px;background:linear-gradient(110deg,#45c9dd,#9b7af5);color:#071224;font-weight:800}.secondary{border:1px solid #35496d;background:#17233c;color:#e7efff;border-radius:12px;padding:11px 13px;font-weight:650}.memory{background:#121d33;border:1px solid #293c5f;padding:12px;border-radius:12px;margin:8px 0;display:flex;gap:10px;align-items:flex-start}.memory span{flex:1;overflow-wrap:anywhere}.memory button{background:transparent;color:#ff9d9d;border:0;font-size:18px}
+footer{text-align:center;color:#7082a4;font-size:11px;padding:10px 0 14px}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="logo">D</div><div><h1>Dream-D</h1><div class="sub">Tu compañera de ideas y aprendizaje</div></div><div class="status">● Memoria local</div></header>
+<nav class="tabs"><button class="tab active" data-tab="chat">Chat</button><button class="tab" data-tab="learn">Enséñame</button><button class="tab" data-tab="memory">Memoria</button><button class="tab" data-tab="internet">Internet</button><button class="tab" data-tab="settings">Conexión IA</button></nav>
+<main>
+<section id="chat" class="panel active">
+<div class="notice">Dream-D puede conversar con un modelo GPT cuando configures un servidor. Tus recuerdos locales se envían como contexto para personalizar las respuestas.</div>
+<div id="messages" class="messages"><div class="msg bot">¡Hola! Soy Dream-D ✨<br>Enséñame cosas en la pestaña “Enséñame” y las guardaré para recordarlas en este dispositivo.</div></div>
+<label class="muted" style="display:flex;align-items:center;gap:7px;padding:0 2px 5px"><input type="checkbox" id="useWeb" style="accent-color:#5de6f5"> Permitir búsqueda web en esta respuesta</label><div class="composer"><input id="chatInput" placeholder="Escribe un mensaje..." autocomplete="off"><button class="send" id="send">Enviar</button></div>
+</section>
+<section id="learn" class="panel">
+<div class="section-title">Enséñale algo nuevo</div><p class="muted">Escribe un dato, una preferencia o una instrucción que quieras que Dream-D recuerde.</p>
+<div class="form"><textarea id="learnInput" rows="4" placeholder="Ejemplo: Mi color favorito es el azul."></textarea><button class="primary" id="saveLearn">Guardar en mi memoria</button><div id="learnFeedback" class="muted"></div></div>
+</section>
+<section id="internet" class="panel">
+<div class="section-title">Buscar en Internet</div>
+<p class="muted">Dream-D puede abrir búsquedas web para que consultes información reciente. En esta versión, los resultados se muestran en el navegador; todavía no se leen automáticamente ni se incorporan solos a su memoria.</p>
+<div class="form">
+<input id="webQuery" class="field" placeholder="¿Qué quieres buscar?">
+<button class="primary" id="webSearch">Buscar en Google</button>
+<button class="secondary" id="webSearchDuck">Buscar en DuckDuckGo</button>
+<p class="muted">Consejo: después de revisar una página, puedes copiar los datos importantes y enseñárselos a Dream-D desde la pestaña “Enséñame”.</p>
+</div>
+</section>
+<section id="settings" class="panel">
+<div class="section-title">Conectar la inteligencia de Dream-D</div>
+<p class="muted">Introduce la dirección HTTPS de tu servidor backend. La clave de OpenAI debe permanecer en el servidor, nunca en esta aplicación.</p>
+<div class="form">
+<label class="muted" for="apiBase">Dirección del servidor</label>
+<input id="apiBase" class="field" placeholder="https://tu-servidor.example.com">
+<button class="primary" id="saveServer">Guardar conexión</button>
+<button class="secondary" id="testServer">Probar conexión</button>
+<div id="serverFeedback" class="muted"></div>
+</div>
+</section>
+<section id="memory" class="panel">
+<div class="section-title">Lo que Dream-D recuerda</div><p class="muted">Estos datos se guardan en el almacenamiento de este navegador, en tu celular.</p>
+<div id="memoryList"></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="secondary" id="export">Exportar memoria</button><button class="secondary" id="importBtn">Importar memoria</button><button class="secondary" id="clear">Borrar todo</button><input id="importFile" type="file" accept="application/json" class="hidden"></div>
+</section>
+</main>
+<footer>Dream-D · Prototipo 1.0 · Tus recuerdos permanecen en este dispositivo</footer>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+let memories=JSON.parse(localStorage.getItem('dreamd_memories')||'[]');
+function persist(){localStorage.setItem('dreamd_memories',JSON.stringify(memories));renderMemory()}
+function renderMemory(){const box=$('#memoryList');box.innerHTML='';if(!memories.length){box.innerHTML='<p class="muted">Todavía no hay recuerdos. Ve a “Enséñame” para agregar el primero.</p>';return}
+memories.forEach((m,i)=>{const el=document.createElement('div');el.className='memory';const span=document.createElement('span');span.textContent=m;const b=document.createElement('button');b.textContent='×';b.title='Eliminar recuerdo';b.onclick=()=>{memories.splice(i,1);persist()};el.append(span,b);box.append(el)})}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab,.panel').forEach(x=>x.classList.remove('active'));b.classList.add('active');$('#'+b.dataset.tab).classList.add('active');if(b.dataset.tab==='memory')renderMemory()});
+$('#saveLearn').onclick=()=>{const v=$('#learnInput').value.trim();if(!v)return;memories.push(v);persist();$('#learnInput').value='';$('#learnFeedback').textContent='¡Aprendido! Lo guardaré en la memoria de este teléfono.'};
+function addMessage(text,kind){const d=document.createElement('div');d.className='msg '+kind;d.textContent=text;$('#messages').append(d);$('#messages').scrollTop=$('#messages').scrollHeight}
+async function send(){
+ const q=$('#chatInput').value.trim();if(!q)return;
+ addMessage(q,'user');$('#chatInput').value='';
+ const wait=document.createElement('div');wait.className='msg bot';wait.textContent='Dream-D está pensando…';$('#messages').append(wait);$('#messages').scrollTop=$('#messages').scrollHeight;
+ const base=(localStorage.getItem('dreamd_api_base')||'').replace(/\/+$/,'');
+ if(!base){wait.textContent='Aún no he sido conectada a un servidor de IA. Abre “Conexión IA” y configura la dirección HTTPS de tu backend. Tus recuerdos siguen guardados en este teléfono.';return}
+ try{
+  const r=await fetch(base+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q,memories:memories,useWeb:$('#useWeb').checked})});
+  const data=await r.json();if(!r.ok)throw new Error(data.error||'Error del servidor');
+  wait.textContent=data.reply||'No recibí una respuesta de texto.';
+ }catch(e){wait.textContent='No pude conectar con Dream-D: '+e.message+'. Revisa Internet y la dirección del servidor.'}
+}
+$('#send').onclick=send;$('#chatInput').addEventListener('keydown',e=>{if(e.key==='Enter')send()});
+$('#export').onclick=()=>{const blob=new Blob([JSON.stringify(memories,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='dream-d-memoria.json';a.click();URL.revokeObjectURL(a.href)};
+$('#importBtn').onclick=()=>$('#importFile').click();$('#importFile').onchange=async e=>{try{const data=JSON.parse(await e.target.files[0].text());if(Array.isArray(data)){memories=[...new Set([...memories,...data.filter(x=>typeof x==='string')])];persist()}}catch{alert('No se pudo leer ese archivo de memoria.')}e.target.value=''};
+$('#clear').onclick=()=>{if(confirm('¿Seguro que quieres borrar todos los recuerdos de Dream-D?')){memories=[];persist()}};
+$('#apiBase').value=localStorage.getItem('dreamd_api_base')||'';
+$('#saveServer').onclick=()=>{const v=$('#apiBase').value.trim().replace(/\/+$/,'');if(v&&!/^https:\/\//i.test(v)){ $('#serverFeedback').textContent='Usa una dirección HTTPS segura.';return }localStorage.setItem('dreamd_api_base',v);$('#serverFeedback').textContent=v?'Dirección guardada en este teléfono.':'Conexión borrada.'};
+$('#testServer').onclick=async()=>{const v=$('#apiBase').value.trim().replace(/\/+$/,'');if(!v){$('#serverFeedback').textContent='Escribe primero la dirección del servidor.';return}try{const r=await fetch(v+'/health');const d=await r.json();$('#serverFeedback').textContent=r.ok?'Servidor disponible: '+(d.status||'OK'):'El servidor respondió con un error.'}catch(e){$('#serverFeedback').textContent='No se pudo contactar el servidor: '+e.message}};
+function openSearch(engine){const q=$('#webQuery').value.trim();if(!q){alert('Escribe primero qué quieres buscar.');return}const url=engine==='duck'?'https://duckduckgo.com/?q='+encodeURIComponent(q):'https://www.google.com/search?q='+encodeURIComponent(q);window.open(url,'_blank','noopener,noreferrer')}
+$('#webSearch').onclick=()=>openSearch('google');
+$('#webSearchDuck').onclick=()=>openSearch('duck');
+$('#webQuery').addEventListener('keydown',e=>{if(e.key==='Enter')openSearch('google')});
+renderMemory();
+if('serviceWorker' in navigator) navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
+</script>
+</body></html>

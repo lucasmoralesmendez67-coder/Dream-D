@@ -1,0 +1,9 @@
+{
+  "name": "Dream-D",
+  "short_name": "Dream-D",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#080c19",
+  "theme_color": "#090d1c",
+  "lang": "es"
+}
